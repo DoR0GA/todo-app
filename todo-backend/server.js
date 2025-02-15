@@ -1,5 +1,5 @@
 import express from "express";
-import taskRoutes from "./routes/TaskRoutes.js";
+import taskRoutes from "./routes/taskRoutes.js";
 import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
@@ -19,5 +19,5 @@ mongoose.connect(process.env.MONGO_URI, {
 .then(() => console.log("MongoDB подключена"))
 .catch(err => console.error("Ошибка подключения к MongoDB:", err));
 
-app.listen(5000, () => console.log("Сервер запущен на порту 5000"));
+app.listen(5001, () => console.log("Сервер запущен на порту 5001"));
 app.use("/api/tasks", taskRoutes);

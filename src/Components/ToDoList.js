@@ -1,21 +1,31 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+
+const API_URL = "http://localhost:5001/api/tasks";
 
 const TodoList = () => {
   const [tasks, setTasks] = useState([]);
   const [task, setTask] = useState("");
 
-  const addTask = () => {
+  useEffect(() => {
+    axios.get(API_URL).then((res) => setTasks(res.data));
+  }, []);
+
+  const addTask = async () => {
     if (!task.trim()) return;
-    setTasks([...tasks, { id: Date.now(), text: task, completed: false }]);
+    const res = await axios.post(API_URL, { text: task });
+    setTasks([...tasks, res.data]);
     setTask("");
   };
 
-  const toggleTask = (id) => {
-    setTasks(tasks.map(t => t.id === id ? { ...t, completed: !t.completed } : t));
+  const toggleTask = async (id) => {
+    const res = await axios.put(`${API_URL}/${id}`);
+    setTasks(tasks.map(t => (t._id === id ? res.data : t)));
   };
 
-  const deleteTask = (id) => {
-    setTasks(tasks.filter(t => t.id !== id));
+  const deleteTask = async (id) => {
+    await axios.delete(`${API_URL}/${id}`);
+    setTasks(tasks.filter(t => t._id !== id));
   };
 
   return (
@@ -31,10 +41,10 @@ const TodoList = () => {
 
       <ul>
         {tasks.map((t) => (
-          <li key={t.id} style={{ textDecoration: t.completed ? "line-through" : "none" }}>
+          <li key={t._id} style={{ textDecoration: t.completed ? "line-through" : "none" }}>
             {t.text}
-            <button onClick={() => toggleTask(t.id)}>✔</button>
-            <button onClick={() => deleteTask(t.id)}>❌</button>
+            <button onClick={() => toggleTask(t._id)}>✔</button>
+            <button onClick={() => deleteTask(t._id)}>❌</button>
           </li>
         ))}
       </ul>
